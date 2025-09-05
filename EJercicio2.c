@@ -23,11 +23,19 @@ static inline void intercambiar(int *a, int *b) {
 
 /* Devuelve el promedio (double) de arr[bajo..alto] */
 double calcular_promedio_segmento(int arr[], int bajo, int alto) {
+    double suma=0;
+    double tamaño = (alto - bajo) +1;
+    for(int i=bajo; i<= alto; i++ ){
+        suma += arr[i];
+    }
+    
+    double pivote = suma/tamaño;
+    
     // Escribe aquí tu función
     // Pista:
     //   - Acumula en (long long) o (double) para evitar overflow
     //   - Devuelve suma / cantidad como double
-    return 0.0; // placeholder
+    return pivote; // placeholder
 }
 
 /*
@@ -44,10 +52,17 @@ double calcular_promedio_segmento(int arr[], int bajo, int alto) {
     - Asegura progreso (evitar ciclos infinitos cuando todos son iguales).
 */
 int particion_por_promedio(int arr[], int bajo, int alto, double pivote) {
+    int i = bajo;
+    for(int j=bajo; j<alto; j++){
+        if(arr[j]<pivote){
+            intercambiar(&arr[i],&arr[j]);
+            i++;
+        }
+    }
     // Escribe aquí tu función
     // Puedes implementar un esquema tipo Hoare o Lomuto pero guiado por pivot double.
     // Recuerda: NO escribas 'pivote' dentro del arreglo; solo compáralo contra arr[i].
-    return -1; // placeholder
+    return i -1; // placeholder
 }
 
 /*
@@ -60,6 +75,15 @@ int particion_por_promedio(int arr[], int bajo, int alto, double pivote) {
 */
 void quicksort_promedio(int arr[], int bajo, int alto) {
     // Escribe aquí tu función
+    if (bajo >= alto) {
+        return;
+    }
+    
+    double pivote = calcular_promedio_segmento(arr, bajo, alto);
+    int pi = particion_por_promedio(arr, bajo, alto, pivote);
+
+    quicksort_promedio(arr, bajo, pi);
+    quicksort_promedio(arr, pi + 1, alto);
 }
 
 /* Utilidad para imprimir un arreglo */
