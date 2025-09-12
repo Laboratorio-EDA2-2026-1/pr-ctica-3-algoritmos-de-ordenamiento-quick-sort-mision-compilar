@@ -96,9 +96,61 @@ int parsear_token(const char *tok, Destino *d) {
  *             esté más cercano a la media. En caso de empate, define
  *             una política simple, p. ej., el de menor índice.
  */
-int elegir_destino(const Destino *destinos, int n) {
-    // Escribe aquí tu función
 
+    // Escribe aquí tu función
+int elegir_destino(const Destino *destinos, int n) {
+    int conocidos = 0, desconocidos = 0;
+    long sumaconocidos = 0;
+    int maxconocido = 0;
+    int hayconocido = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (destinos[i].es_conocido) {
+            conocidos++;
+            sumaconocidos += destinos[i].costo;
+            if (!hayconocido || destinos[i].costo > maxconocido) {
+                maxconocido = destinos[i].costo;
+                hayconocido = 1;
+            }
+        } else {
+            desconocidos++;
+        }
+    }
+
+    if (!hayconocido || desconocidos == 0) return -1;
+
+    if (desconocidos > conocidos) {
+        int *idx_desconocidos = (int *)malloc(desconocidos * sizeof(int));
+        if (!idx_desconocidos) return -1;
+        int k = 0;
+        for (int i = 0; i < n; i++) {
+            if (!destinos[i].es_conocido) idx_desconocidos[k++] = i;
+        }
+        int elegido = idx_desconocidos[rand() % desconocidos];
+        free(idx_desconocidos);
+        return elegido;
+    }
+
+    double media = (double)sumaconocidos / (double)conocidos;
+
+    int indiceelegido = -1;
+    double mejordist = -1.0;
+    int valordesconocido = maxconocido + 1;
+
+    for (int i = 0; i < n; i++) {
+        int valor = destinos[i].es_conocido ? destinos[i].costo : valordesconocido;
+        double dist = (valor - media);
+        if (dist < 0) dist = -dist;
+
+        if (indiceelegido == -1 || dist < mejordist ||
+            (dist == mejordist && i < indiceelegido)) {
+            indiceelegido = i;
+            mejordist = dist;
+        }
+    }
+
+    return indiceelegido;
+}
     // Sugerencias de variables que podrías usar:
     // int conocidos = 0, desconocidos = 0;
     // int indice_elegido = -1;
@@ -118,8 +170,8 @@ int elegir_destino(const Destino *destinos, int n) {
     // 4) Hallar el índice con distancia mínima a la media
     //      - manejar empates de forma determinista (p. ej., menor índice)
 
-    return -1; // Placeholder: reemplaza por el índice elegido
-}
+     // Placeholder: reemplaza por el índice elegido
+
 
 int main(void) {
     int n;

@@ -42,17 +42,60 @@
  * - No está permitido comparar tuerca vs tuerca ni tornillo vs tornillo.
  *
  */
+static inline void swap_int(int *a, int *b) {
+    int t = *a; *a = *b; *b = t;
+}
+
+int partir_tuercas(int tuercas[], int bajo, int alto, int tornilloPivote) {
+    int i = bajo;
+    int iguales = -1;
+
+    for (int j = bajo; j <= alto; j++) {
+        if (tuercas[j] < tornilloPivote) {
+            swap_int(&tuercas[i], &tuercas[j]);
+            i++;
+        } else if (tuercas[j] == tornilloPivote) {
+            iguales = j;
+        }
+    }
+
+    if (iguales == -1) iguales = alto;  // caso raro
+    swap_int(&tuercas[i], &tuercas[iguales]);
+    return i;
+}
+
+int partir_tornillos(int tornillos[], int bajo, int alto, int tuercaPivote) {
+    int i = bajo;
+    int iguales = -1;
+
+    for (int j = bajo; j <= alto; j++) {
+        if (tornillos[j] < tuercaPivote) {
+            swap_int(&tornillos[i], &tornillos[j]);
+            i++;
+        } else if (tornillos[j] == tuercaPivote) {
+            iguales = j;
+        }
+    }
+
+    if (iguales == -1) iguales = alto;
+    swap_int(&tornillos[i], &tornillos[iguales]);
+    return i;
+}
+
+static void emparejar_recursivo(int tuercas[], int tornillos[], int bajo, int alto) {
+    if (bajo >= alto) return;
+
+    int idxTuercaPivot = partir_tuercas(tuercas, bajo, alto, tornillos[alto]);
+    partir_tornillos(tornillos, bajo, alto, tuercas[idxTuercaPivot]);
+
+    emparejar_recursivo(tuercas, tornillos, bajo, idxTuercaPivot - 1);
+    emparejar_recursivo(tuercas, tornillos, idxTuercaPivot + 1, alto);
+}
+
 void emparejar_tuercas_y_tornillos(int tuercas[], int tornillos[], int n) {
-    // Escribe aquí tu función
-    //
-    // Sugerencia: define una función recursiva como:
-    // void emparejar_recursivo(int tuercas[], int tornillos[], int bajo, int alto);
-    //
-    // Dentro de ella puedes llamar a:
-    //   int indicePivote = partir_tuercas(tuercas, bajo, alto, tornillos[alto]);
-    //   partir_tornillos(tornillos, bajo, alto, tuercas[indicePivote]);
-    //
-    // Y luego hacer llamadas recursivas en los subarreglos.
+    if (n > 1) {
+        emparejar_recursivo(tuercas, tornillos, 0, n - 1);
+    }
 }
 
 /* Imprime un arreglo lineal */
